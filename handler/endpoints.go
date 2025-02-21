@@ -23,6 +23,7 @@ func (s *Server) PostEstate(ctx echo.Context) error {
 
 	estate, err := s.estateUsecase.CreateEstate(ctx.Request().Context(), req.Width, req.Length)
 	if err != nil {
+		slog.Error("error", "message", err.Error())
 		return ctx.JSON(http.StatusInternalServerError, generated.ErrorResponse{Message: "Internal server error"})
 	}
 
@@ -64,6 +65,7 @@ func (s *Server) PostEstateIdTree(ctx echo.Context, id uuid.UUID) error {
 func (s *Server) GetEstateIdStats(ctx echo.Context, id uuid.UUID) error {
 	stats, err := s.estateUsecase.GetEstateStats(ctx.Request().Context(), id)
 	if err != nil {
+		slog.Error("error", "message", err.Error())
 		if errors.Is(err, domain.ErrorEstatesNotFound) {
 			return ctx.JSON(http.StatusNotFound, generated.ErrorResponse{Message: err.Error()})
 		}
@@ -83,6 +85,7 @@ func (s *Server) GetEstateIdStats(ctx echo.Context, id uuid.UUID) error {
 func (s *Server) GetEstateIdDronePlan(ctx echo.Context, id uuid.UUID, params generated.GetEstateIdDronePlanParams) error {
 	droneDistance, err := s.estateUsecase.GetDroneDistance(ctx.Request().Context(), id, params.MaxDistance)
 	if err != nil {
+		slog.Error("error", "message", err.Error())
 		if errors.Is(err, domain.ErrorEstatesNotFound) {
 			return ctx.JSON(http.StatusNotFound, generated.ErrorResponse{Message: err.Error()})
 		}
