@@ -1,5 +1,35 @@
 # Backend Engineering Interview Assignment (Golang)
 
+## API Test Adjustments (Important)
+
+I have adjusted the API test cases to align with the documentation:
+
+- Removed the API test for the hello endpoint, as it was intended only as a guideline and can be safely deleted.
+- Corrected the response status codes for Create Estate and Create Tree APIs to HTTP 201 (Created) as per requirements (previously HTTP 200).
+
+API tests passed on my end.
+
+```sh
+go clean -testcache
+go test ./tests/...
+ok      github.com/SawitProRecruitment/EstateService/tests      0.313s
+```
+
+## Code Structure
+
+The project follows a **hexagonal architecture** (similar to Clean Architecture) by separating business logic from external dependencies.
+
+- Core (`domain`, `usecase`, `port/interfaces`) is independent of infrastructure.
+- Adapters (`handler`, `storage`) depend on the core — not the other way around.
+
+## Clear separation of concerns:
+
+- `core/domain` → Pure business objects (independent of any external dependencies).
+- `core/usecase` → Business logic, coordinating with repository interfaces.
+- `core/interfaces` → Interfaces for inbound (usecase) and outbound (repo) dependencies.
+- `storage/postgres` → Outbound adapter, implementing the repo interface.
+- `handler` → Inbound adapter, consuming the usecase interface.
+
 ## Requirements
 
 To run this project you need to have the following installed:
