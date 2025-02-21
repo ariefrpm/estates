@@ -1,0 +1,231 @@
+# This is the OpenAPI specification for your service. It is used to generate the client code.
+# To generate the server code, use the Gradle task `openApiGenerate`. The 
+# generated code will be placed in `build/generate-resources/main`.
+#
+# We will evaluate you based on how well you design your API.
+# 1. How well it follows REST principles.
+# 2. How easy it is to understand and use.
+#
+# References
+# 1. https://swagger.io/specification/
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: User Service
+  license:
+    name: MIT
+servers:
+  - url: http://localhost
+paths:
+  /estate:
+    post:
+      summary: Create an estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEstateRequest'
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEstateResponse'
+        '400':
+          description: Invalid value or format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /estate/{id}/tree:
+    post:
+      summary: Add a tree to an estate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTreeRequest'
+      responses:
+        '201':
+          description: Tree successfully added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTreeResponse'
+        '400':
+          description: Invalid value or format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Estate not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /estate/{id}/stats:
+    get:
+      summary: Get stats for trees in an estate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Stats for the trees in the estate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEstateTreeStatsResponse'
+        '404':
+          description: Estate not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /estate/{id}/drone-plan:
+    get:
+      summary: Get the sum distance of the drone monitoring travel in the estate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: max-distance
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 100
+      responses:
+        '200':
+          description: Sum distance of the drone monitoring travel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEstateDronePlanResponse'
+        '404':
+          description: Estate not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    CreateEstateRequest:
+      type: object
+      properties:
+        length:
+          type: integer
+          example: 10
+          minimum: 1
+          maximum: 50000
+        width:
+          type: integer
+          example: 10
+          minimum: 1
+          maximum: 50000
+      required:
+        - length
+        - width
+
+    CreateEstateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "aaaaaa-bbbbbb-cccccc-ddddd"
+
+    CreateTreeRequest:
+      type: object
+      properties:
+        x:
+          type: integer
+          example: 10
+          minimum: 1
+          maximum: 50000
+        y:
+          type: integer
+          example: 10
+          minimum: 1
+          maximum: 50000
+        height:
+          type: integer
+          example: 30
+          minimum: 1
+          maximum: 30
+      required:
+        - x
+        - y
+        - height
+
+    CreateTreeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "aaaaaa-bbbbbb-cccccc-ddddd"
+
+    GetEstateTreeStatsResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 0
+        max:
+          type: integer
+          example: 0
+        min:
+          type: integer
+          example: 0
+        median:
+          type: integer
+          example: 0
+
+    GetEstateDronePlanResponse:
+      type: object
+      properties:
+        distance:
+          type: integer
+          example: 200
+        rest:
+          type: object
+          properties:
+            x:
+              type: integer
+              example: 10
+            y:
+              type: integer
+              example: 1
+
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "Invalid length or width value"
+
